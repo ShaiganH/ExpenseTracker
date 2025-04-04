@@ -4,6 +4,7 @@ using dotnet_project2.DTOs.User;
 using dotnet_project2.Interfaces;
 using dotnet_project2.Models;
 using dotnet_project2.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -49,6 +50,11 @@ public class AccountController : ControllerBase
             var Result = await _userManager.CreateAsync(NewUser, user.Password);
             if (Result.Succeeded)
             {
+                var RoleResult = await _userManager.AddToRoleAsync(NewUser,"User");
+                if (!RoleResult.Succeeded)
+                {
+                    return BadRequest("Failed to add user to role");
+                }
                 return Created("User created successfully",new NewUserDto{
                     Username = NewUser.UserName,
                     Email = NewUser.Email,
@@ -93,4 +99,16 @@ public class AccountController : ControllerBase
             return StatusCode(500,e);
         }
     }
+
+    [Authorize(Roles = "Admin")]
+    [HttpDelete("delete/{id}")]
+    public async Task<IActionResult> DeleteUser(string id)
+    {
+        var user = await _userManager.FindByIdAsync(id);
+        if (user == null) return NotFound("User not found");
+
+        await _userManager.DeleteAsync(user);
+        return Ok("User deleted");
+    }
+
 }

@@ -145,3 +145,6 @@
 /Users/user1/dotnet-project2/bin/Debug/net9.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 /Users/user1/dotnet-project2/bin/Debug/net9.0/Microsoft.IdentityModel.Tokens.dll
 /Users/user1/dotnet-project2/bin/Debug/net9.0/System.IdentityModel.Tokens.Jwt.dll
+/Users/user1/dotnet-project2/bin/Debug/net9.0/Newtonsoft.Json.dll
+/Users/user1/dotnet-project2/bin/Debug/net9.0/System.Net.WebSockets.WebSocketProtocol.dll
+/Users/user1/dotnet-project2/obj/Debug/net9.0/dotnet-project2.sourcelink.json

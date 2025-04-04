@@ -7,6 +7,8 @@ using Microsoft.OpenApi.Models;
 using dotnet_project2.Interfaces;
 using dotnet_project2.Service;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.SignalR;
+using dotnet_project2.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +16,7 @@ builder.Services.AddOpenApi();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSignalR();
 builder.Services.AddSwaggerGen(option =>
 {
     option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
@@ -48,6 +51,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => {
 });
 
 builder.Services.AddScoped<ITokenService, TokenService>();
+
 
 builder.Services.AddIdentity<ApplicationUser,IdentityRole>( options => {
         options.Password.RequireDigit = false;
@@ -106,6 +110,7 @@ app.UseCors(x=>
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<ExpenseHub>("/expenseHub");
 
 
 app.Run();

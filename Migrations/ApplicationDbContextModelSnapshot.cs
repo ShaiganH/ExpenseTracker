@@ -46,6 +46,20 @@ namespace dotnet_project2.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "67987430-53a0-4f86-b0f6-0c98656f4bf5",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "07baaab1-00cc-4d40-9d33-a2680e1c8e0b",
+                            Name = "User",
+                            NormalizedName = "USER"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -152,6 +166,34 @@ namespace dotnet_project2.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("dotnet_project2.Models.Achievement", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Achievements");
                 });
 
             modelBuilder.Entity("dotnet_project2.Models.ApplicationUser", b =>
@@ -362,6 +404,17 @@ namespace dotnet_project2.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("dotnet_project2.Models.Achievement", b =>
+                {
+                    b.HasOne("dotnet_project2.Models.ApplicationUser", "User")
+                        .WithOne("Achievements")
+                        .HasForeignKey("dotnet_project2.Models.Achievement", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("dotnet_project2.Models.Budget", b =>
                 {
                     b.HasOne("dotnet_project2.Models.ApplicationUser", "ApplicationUser")
@@ -399,6 +452,8 @@ namespace dotnet_project2.Migrations
 
             modelBuilder.Entity("dotnet_project2.Models.ApplicationUser", b =>
                 {
+                    b.Navigation("Achievements");
+
                     b.Navigation("Budget");
 
                     b.Navigation("Categories");

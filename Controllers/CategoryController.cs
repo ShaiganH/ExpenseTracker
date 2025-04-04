@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using dotnet_project2.Extensions;
 using dotnet_project2.DTOs.Category;
+using dotnet_project2.Helpers;
 
 namespace dotnet_project2.Controllers;
 
@@ -24,7 +25,7 @@ public class CategoryController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetCategories()
+    public IActionResult GetCategories([FromQuery] CategoryQueryObject categoryQuery)
     {
         var userId = User.GetUserId();
 
@@ -32,10 +33,15 @@ public class CategoryController : ControllerBase
     {
         return Unauthorized("User ID not found in token.");
     }
-
-    var categories = await _context.Categories
+    
+    var categories =  _context.Categories
         .Where(x => x.ApplicationUserId == userId)
-        .ToListAsync();
+        .AsQueryable();
+
+    if(!string.IsNullOrEmpty(categoryQuery.ByName))
+    {
+        categories = categories.Where(x => x.Name.Contains(categoryQuery.ByName));
+    }
 
     return Ok(categories);
     }
@@ -48,6 +54,13 @@ public class CategoryController : ControllerBase
         if (string.IsNullOrEmpty(userId))
         {
             return Unauthorized("User ID not found in token.");
+        }
+        var existingCategory = await _context.Categories
+            .FirstOrDefaultAsync(c => c.Name == category.Name && c.ApplicationUserId == userId);
+
+        if (existingCategory != null) 
+        {
+            return BadRequest("Category already exists.");
         }
 
         Category newCategory = new Category(){
